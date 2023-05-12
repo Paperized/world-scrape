@@ -1,0 +1,41 @@
+<div class="flex sm:justify-center sm:items-center h-full">
+  <mat-card class="my-card flex w-full sm:w-1/3">
+    <mat-card-header class="mat-full-width">
+      <mat-card-title class="!flex !mb-2">
+        <h3 translate="register.title"></h3>
+        <a class="router-link-no-underline ml-auto flex items-center" routerLink="/login">
+          <span style="font-size: medium" translate="register.loginHere"></span>
+          <mat-icon inline="true">arrow_right_alt</mat-icon>
+        </a>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form class="flex flex-col" [formGroup]="registerForm" (submit)="onSubmit()">
+        <mat-form-field>
+          <mat-label translate="general.email"></mat-label>
+          <input matInput type="email" placeholder="Enter your email" formControlName="email">
+          <mat-error *ngIf="this.getFirstErrorMessage(registerForm.controls['email']); let localError" [translate]="localError"></mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label translate="general.username"></mat-label>
+          <input matInput type="text" placeholder="Enter your username" formControlName="username">
+          <mat-error *ngIf="this.getFirstErrorMessage(registerForm.controls['username']); let localError"
+                     [translate]="localError" [translateParams]="{max: 16, min: 3}"></mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label translate="general.password"></mat-label>
+          <input matInput type="password" placeholder="Enter your password" formControlName="password">
+          <mat-error *ngIf="this.getFirstErrorMessage(registerForm.controls['password']); let localError"
+                     [translate]="localError" [translateParams]="{min: 6}"></mat-error>
+        </mat-form-field>
+        <mat-form-field class="input-field">
+          <mat-label translate="general.confirmPassword"></mat-label>
+          <input matInput type="password" placeholder="Confirm your password" formControlName="confirmPassword">
+          <mat-error *ngIf="this.getFirstErrorMessage(registerForm.controls['confirmPassword']); let localError" [translate]="localError"></mat-error>
+        </mat-form-field>
+        <mat-hint *ngIf="errorCodeResult" errorTranslate errorType="serverResponse" [errorCode]="errorCodeResult"></mat-hint>
+        <button class="login-button" mat-raised-button color="primary" [disabled]="registerForm.invalid" translate="register.registerBtn"></button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

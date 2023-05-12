@@ -1,0 +1,46 @@
+{
+  "general": {
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Conferma Password"
+  },
+  "errors": {
+    "serverResponse": {
+      "uc_unhandled": "Field unique",
+      "uc_user_username": "Questo nome utente è già in uso",
+      "uc_user_email": "Questa email è già in uso",
+
+      "uc_role_name": "Questo ruolo è già in uso",
+
+      "fk_user_id": "Questo utente non esiste",
+      "fk_role_id": "Questo ruolo non esiste",
+
+      "internalError": "Internal error",
+      "entityNotFound": "Questa risorsa non esiste",
+      "entityAlreadyExists": "Questa risorsa già esiste",
+      "badCredentials": "Username o password errati",
+      "lockedAccount": "Il tuo account è bloccato",
+      "disabledAccount": "Il tuo account è disabilitato",
+      "tokenExpired": "La tua sessione è scaduta, accedi e riprova"
+    },
+    "form": {
+      "required": "Questo campo è obbligatorio",
+      "minlength": "Questo campo deve essere di almeno {{ min }} caratteri",
+      "maxlength": "Questo campo non può contenere più di {{ max }} caratteri",
+      "email": "Email non valida",
+      "passwordMismatch": "La password confermata è diversa dalla precedente"
+    }
+  },
+  "login": {
+    "registerHere": "Registrati",
+    "title": "Accedi",
+    "loginBtn": "Accedi"
+  },
+  "register": {
+    "loginHere": "Accedi",
+    "title": "Crea un Account",
+    "registerBtn": "Iscriviti"
+  }
+}
+

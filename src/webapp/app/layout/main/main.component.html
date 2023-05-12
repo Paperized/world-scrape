@@ -1,0 +1,15 @@
+<div class="flex flex-col min-h-screen">
+  <app-navbar [sidenav]="sidenav" class="flex-none" #navbar></app-navbar>
+  <main id="main-page" class="flex flex-auto">
+    <mat-sidenav-container>
+      <mat-sidenav #sidenav>
+        <ng-template #empty></ng-template>
+        <ng-container *ngTemplateOutlet="navbar.sidenavTemplate || empty"/>
+      </mat-sidenav>
+      <mat-sidenav-content>
+        <router-outlet></router-outlet>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </main>
+  <app-footer class="flex-none"></app-footer>
+</div>

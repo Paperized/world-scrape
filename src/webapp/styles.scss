@@ -1,0 +1,48 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+#main-page > *:not(router-outlet) {
+  flex: 1;
+}
+
+mat-card-header.mat-full-width > .mat-mdc-card-header-text {
+  width: 100% !important;
+}
+
+.my-card {
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.input-field {
+  margin-bottom: 10px;
+}
+
+.router-link {
+  color: black;
+  text-decoration: underline;
+  &:hover {
+    color: dodgerblue;
+    cursor: pointer;
+  }
+}
+
+.router-link-no-underline {
+  color: black;
+  text-decoration: none;
+  &:hover {
+    color: dodgerblue;
+    cursor: pointer;
+  }
+}
+

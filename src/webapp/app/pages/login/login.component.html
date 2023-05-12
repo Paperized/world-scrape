@@ -1,0 +1,32 @@
+<div class="flex sm:justify-center sm:items-center h-full">
+  <mat-card class="my-card flex w-full sm:w-1/3">
+    <mat-card-header class="mat-full-width">
+      <mat-card-title class="!flex !mb-2">
+        <h3 translate="login.title"></h3>
+        <a class="router-link-no-underline ml-auto flex items-center" routerLink="/register">
+          <span style="font-size: medium" translate="login.registerHere"></span>
+          <mat-icon>arrow_right_alt</mat-icon>
+        </a>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form class="flex flex-col" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field class="input-field">
+          <mat-label translate="general.email"></mat-label>
+          <input matInput placeholder="Enter your email" formControlName="email">
+          <mat-error *ngIf="this.getFirstErrorMessage(loginForm.controls['email']); let localError"
+                     [translate]="localError"></mat-error>
+        </mat-form-field>
+        <mat-form-field class="input-field">
+          <mat-label translate="general.password"></mat-label>
+          <input matInput placeholder="Enter your password" type="password" formControlName="password">
+          <mat-error *ngIf="this.getFirstErrorMessage(loginForm.controls['password']); let localError"
+                     [translate]="localError" [translateParams]="{min: 6}"></mat-error>
+        </mat-form-field>
+        <mat-hint *ngIf="errorCodeResult" errorTranslate errorType="serverResponse" [errorCode]="errorCodeResult"></mat-hint>
+        <button class="login-button" mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid"
+                translate="login.loginBtn"></button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
