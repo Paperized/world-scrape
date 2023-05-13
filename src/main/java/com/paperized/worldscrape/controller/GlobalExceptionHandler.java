@@ -3,6 +3,7 @@ package com.paperized.worldscrape.controller;
 import com.paperized.worldscrape.exception.ApiErrorResponse;
 import com.paperized.worldscrape.exception.EntityAlreadyExistsException;
 import com.paperized.worldscrape.exception.EntityNotFoundException;
+import com.paperized.worldscrape.exception.ScraperRequestFailedException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -92,6 +93,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     return new ResponseEntity<>(ApiErrorResponse.fromErrors(httpStatus, errorCode, errorMessage), httpStatus);
+  }
+
+  @ExceptionHandler(ScraperRequestFailedException.class)
+  public ResponseEntity<ApiErrorResponse> scraperRequestExceptionException(ScraperRequestFailedException exception) {
+    return new ResponseEntity<>(
+      ApiErrorResponse.fromErrors(exception.getErrorStatus(),
+        "scraperError",
+        exception.getErrorMessage()),
+      exception.getErrorStatus()
+    );
   }
 
   @ExceptionHandler(Exception.class)
