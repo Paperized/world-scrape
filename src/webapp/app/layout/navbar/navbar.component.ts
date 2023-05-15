@@ -7,7 +7,7 @@ import {MatSidenav} from "@angular/material/sidenav";
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
-  StoreName: string = "AmazingShop";
+  StoreName: string = "World Scrape";
   @Input() sidenav?: MatSidenav;
 
   @ViewChild("sidenavTemplate")

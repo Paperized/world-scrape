@@ -22,7 +22,8 @@
       "badCredentials": "Username o password errati",
       "lockedAccount": "Il tuo account è bloccato",
       "disabledAccount": "Il tuo account è disabilitato",
-      "tokenExpired": "La tua sessione è scaduta, accedi e riprova"
+      "tokenExpired": "La tua sessione è scaduta, accedi e riprova",
+      "scraperError": "Errore durante lo scraping dei dati"
     },
     "form": {
       "required": "Questo campo è obbligatorio",

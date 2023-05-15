@@ -1,6 +1,6 @@
-<div class="flex flex-col min-h-screen">
+<div class="flex flex-col" [ngClass]="maintainScreenHeight ? 'h-screen' : 'min-h-screen'">
   <app-navbar [sidenav]="sidenav" class="flex-none" #navbar></app-navbar>
-  <main id="main-page" class="flex flex-auto">
+  <main id="main-page" class="flex flex-auto" [ngClass]="{ 'min-h-0': maintainScreenHeight }">
     <mat-sidenav-container>
       <mat-sidenav #sidenav>
         <ng-template #empty></ng-template>

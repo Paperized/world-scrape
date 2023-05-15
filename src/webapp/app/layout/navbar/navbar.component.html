@@ -3,25 +3,23 @@
     <button mat-icon-button (click)="sidenav?.toggle()" class="!inline-block sm:hidden">
       <mat-icon>menu</mat-icon>
     </button>
-    <span class="" routerLink="/">{{ StoreName }}</span>
+    <a routerLink="/">{{ StoreName }}</a>
     <span class="flex-auto"></span>
-    <div class="hidden sm:block">
+    <div class="hidden sm:block h-full [&>a]:!h-full">
       <!-- The following menu items will be hidden on both SM and XS screen sizes -->
-      <a href="#" mat-button>Menu Item 5</a>
-      <a href="#" mat-button>Menu Item 6</a>
+      <a routerLink="/scraper" routerLinkActive="active-link-navbar" mat-button>Try it</a>
+      <a routerLink="/login" routerLinkActive="active-link-navbar" mat-button>Login</a>
+      <a routerLink="/register" routerLinkActive="active-link-navbar" mat-button>Register</a>
     </div>
   </mat-toolbar-row>
 </mat-toolbar>
 
 <ng-template #sidenavTemplate>
-  <mat-nav-list>
-    <a (click)="sidenav?.toggle()" href="" mat-list-item>Close</a>
-    <a href="#" mat-list-item>Siu 1</a>
-    <a href="#" mat-list-item>Menu Item 2</a>
-    <a href="#" mat-list-item>Menu Item 3</a>
-    <a href="#" mat-list-item>Menu Item 4</a>
-    <a href="#" mat-list-item>Menu Item 5</a>
-    <a href="#" mat-list-item>Menu Item 6</a>
+  <mat-nav-list class="w-40 text-center">
+    <a (click)="sidenav?.toggle()" mat-list-item>Close</a>
+    <a routerLink="/scraper" routerLinkActive="active-link" mat-list-item>Try it</a>
+    <a routerLink="/login" routerLinkActive="active-link" mat-list-item>Login</a>
+    <a routerLink="/register" routerLinkActive="active-link" mat-list-item>Register</a>
   </mat-nav-list>
 </ng-template>
 

@@ -1,0 +1,90 @@
+<div class="flex flex-row max-h-full min-h-full w-full bg-gray-100">
+  <mat-card class="max-w-xl p-6 flex-auto m-2">
+    <div class="flex w-full items-center min-h-0">
+      <h2 class="text-2xl font-bold mb-4">Page Parameters</h2>
+      <mat-form-field class="ml-auto" appearance="fill">
+        <mat-label>Template</mat-label>
+        <input type="text" matInput [formControl]="configAutocompleteControl" [matAutocomplete]="auto" (ngModelChange)="onConfigSelectedChanged($event)">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    <mat-divider class="!mb-3"></mat-divider>
+    <mat-form-field class="w-full">
+      <input matInput required placeholder="URL" [(ngModel)]="url"/>
+    </mat-form-field>
+    <div>
+      <button mat-button color="primary" class="flex align-center mb-2" (click)="addParam()">
+        <mat-icon>add</mat-icon>
+        <span class="ml-2">Add parameter</span>
+      </button>
+    </div>
+    <div class="h-full overflow-auto">
+      <div class="flex items-center mb-2 h-0 invisible">
+        <mat-form-field class="w-5/12">
+          <input matInput placeholder="Key"/>
+          <button mat-mini-fab matSuffix color="primary" class="mr-1 opacity-90"></button>
+        </mat-form-field>
+        <mat-form-field class="w-7/12 ml-2">
+          <input matInput placeholder="Value"/>
+        </mat-form-field>
+        <button mat-icon-button color="warn"  class="flex-none translate-y-[-12px] scale-75">
+          <mat-icon>delete</mat-icon>
+        </button>
+        <span class="w-8"></span>
+      </div>
+      <div *ngFor="let param of scraperParams; let i = index">
+        <div class="flex items-center mb-2">
+          <mat-form-field class="w-5/12">
+            <input matInput placeholder="Key" [(ngModel)]="param.name"/>
+            <button mat-mini-fab matSuffix color="primary" [matMenuTriggerFor]="menu" (click)="noPropagation($event)" class="mr-1 opacity-90">
+              {{ param.type.at(0) | uppercase }}
+            </button>
+          </mat-form-field>
+          <mat-form-field class="w-7/12 ml-2">
+            <ng-container [ngSwitch]="param.type">
+              <input *ngSwitchCase="'text'" matInput placeholder="Value" [(ngModel)]="param.value"/>
+              <mat-select *ngSwitchCase="'bool'" [(ngModel)]="param.value">
+                <mat-option [value]="true">True</mat-option>
+                <mat-option [value]="false">False</mat-option>
+              </mat-select>
+              <input *ngSwitchCase="'number'" matInput type="number" placeholder="Value" [(ngModel)]="param.value"/>
+              <input *ngSwitchDefault matInput placeholder="Value" [(ngModel)]="param.value"/>
+            </ng-container>
+
+          </mat-form-field>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="selectType(i, 'text')">Text</button>
+            <button mat-menu-item (click)="selectType(i, 'number')">Number</button>
+            <button mat-menu-item (click)="selectType(i, 'bool')">Bool</button>
+          </mat-menu>
+          <button mat-icon-button color="warn" (click)="removeParam(i)" class="flex-none translate-y-[-12px] scale-75">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <button mat-raised-button color="accent" [disabled]="isLoading" (click)="sendRequest()">Scrape data</button>
+  </mat-card>
+  <mat-card class="flex-grow min-w-0 m-2">
+    <mat-card-header>
+      <mat-card-title class="px-6 !py-2 text-2xl font-bold"><h2>Scraping Result {{ scrapeResult ? '' : ' - Example' }}</h2></mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="!px-0 !pb-0 overflow-hidden">
+      <ng-container *ngIf="isLoading">
+        <div class="flex items-center justify-center absolute top-0 left-0 w-full h-full bg-gray-200 opacity-75">
+          <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
+        </div>
+      </ng-container>
+      <span class="text-red-500 ml-3 text-sm" *ngIf="errorCodeResult" errorTranslate [errorCode]="errorCodeResult"
+            errorType="serverResponse"></span>
+      <p class="max-h-full font-mono whitespace-pre p-3 flex-grow text-xs overflow-auto" [ngClass]="{'opacity-20': isLoading}">
+        {{ JSON.stringify(scrapeResult ? scrapeResult : exampleResult, null, 2) }}
+      </p>
+    </mat-card-content>
+  </mat-card>
+</div>
+

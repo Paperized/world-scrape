@@ -21,7 +21,8 @@
       "badCredentials": "Username or password is incorrect",
       "lockedAccount": "Your account is locked",
       "disabledAccount": "Your account is disabled",
-      "tokenExpired": "Your session ended, please login again"
+      "tokenExpired": "Your session ended, please login again",
+      "scraperError": "Error while scraping data"
     },
     "form": {
       "required": "This field is required",

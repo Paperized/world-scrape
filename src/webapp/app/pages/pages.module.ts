@@ -11,12 +11,18 @@ import {MatInputModule} from "@angular/material/input";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
+import {ScraperExecutionComponent} from "./scraper-execution/scraper-execution.component";
+import {MatMenuModule} from "@angular/material/menu";
+import {MatSelectModule} from "@angular/material/select";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import {MatListModule} from "@angular/material/list";
 
 @NgModule({
   declarations: [
     HomeComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    ScraperExecutionComponent
   ],
   imports: [
     CommonModule,
@@ -27,7 +33,11 @@ import {MatIconModule} from "@angular/material/icon";
     FormsModule,
     MatButtonModule,
     ReactiveFormsModule,
-    MatIconModule
+    MatIconModule,
+    MatMenuModule,
+    MatSelectModule,
+    MatAutocompleteModule,
+    MatListModule
   ]
 })
 export class PagesModule {
