@@ -25,6 +25,9 @@ public class ScraperFileConfiguration {
   @Column(nullable = false)
   private String urlStyle;
 
-  @OneToMany(mappedBy = "fileConfiguration", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  public List<ScraperFileParameter> fileParameters;
+  @Column(nullable = false)
+  private String configurationUrl;
+
+  @OneToMany(mappedBy = "fileConfiguration", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  public List<ScraperFileParameter> fileParameters = new ArrayList<>();
 }

@@ -34,5 +34,4 @@ export const jsonMockedResult ="{\n" +
   "        \"https://media-cdn.tripadvisor.com/media/photo-o/03/b1/84/fa/idea-hotel-palermo.jpg\",\n" +
   "        \"https://media-cdn.tripadvisor.com/media/photo-s/02/1c/28/88/idea-hotel-palermo.jpg\"\n" +
   "    ]\n" +
-  "}"
-export const mockedResult: any = JSON.parse(jsonMockedResult);
+  "}";

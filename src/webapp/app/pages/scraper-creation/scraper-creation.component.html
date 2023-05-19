@@ -1,20 +1,49 @@
 <div class="flex flex-row max-h-full min-h-full w-full bg-gray-100">
+  <mat-card class="flex-grow min-w-0 m-2">
+    <mat-card-header class="mat-full-width">
+      <mat-card-title class="!py-2 !px-6 text-2xl font-bold !flex flex-row flex-wrap">
+        <h2>Scraper Configuration</h2>
+        <mat-form-field class="ml-auto" appearance="fill">
+          <mat-label>Configurations</mat-label>
+          <input type="text" matInput [formControl]="configAutocompleteControl" [matAutocomplete]="auto" (ngModelChange)="onConfigSelectedChanged($event)">
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+              {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+          <button *ngIf="this.currentConfiguration.id" matSuffix mat-icon-button aria-label="Clear" (click)="resetConfigurationSelectedWithModal($event)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+        <span class="text-red-500 text-sm w-full" *ngIf="errorCodeResult" errorTranslate [errorCode]="errorCodeResult"
+              errorType="serverResponse"></span>
+        <mat-divider class="!w-full"></mat-divider>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="!p-1 !flex-grow overflow-hidden">
+      <ng-container *ngIf="isLoading">
+        <div class="flex items-center justify-center absolute top-0 left-0 w-full h-full bg-gray-200 opacity-75">
+          <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
+        </div>
+      </ng-container>
+      <textarea matInput class="min-h-full max-h-full w-full font-mono whitespace-pre py-3 flex-grow text-xs overflow-auto"
+                [ngClass]="{'opacity-20': isLoading}" [(ngModel)]="currentConfigurationText"></textarea>
+    </mat-card-content>
+  </mat-card>
   <mat-card class="max-w-xl p-6 flex-auto m-2">
-    <div class="flex w-full items-center min-h-0">
+    <div class="flex w-full">
       <h2 class="text-2xl font-bold mb-4">Page Parameters</h2>
-      <mat-form-field class="ml-auto" appearance="fill">
-        <mat-label>Template</mat-label>
-        <input type="text" matInput required [formControl]="configAutocompleteControl" [matAutocomplete]="auto" (ngModelChange)="onConfigSelectedChanged($event)">
-        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-            {{option.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+      <button *ngIf="currentConfiguration.id" mat-raised-button color="warn" class="ml-auto" (click)="deleteConfiguration()">
+        Delete
+        <mat-icon aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
+      </button>
     </div>
     <mat-divider class="!mb-3"></mat-divider>
     <mat-form-field class="w-full">
-      <input matInput required placeholder="URL" [(ngModel)]="url"/>
+      <input matInput required placeholder="Configuration Name" [(ngModel)]="currentConfiguration.name"/>
+    </mat-form-field>
+    <mat-form-field class="w-full">
+      <input matInput required placeholder="URL Style" [(ngModel)]="currentConfiguration.urlStyle"/>
     </mat-form-field>
     <div>
       <button mat-button color="primary" class="flex align-center mb-2" (click)="addParam()">
@@ -36,7 +65,7 @@
         </button>
         <span class="w-8"></span>
       </div>
-      <div *ngFor="let param of scraperParams; let i = index">
+      <div *ngFor="let param of currentConfiguration.params; let i = index">
         <div class="flex items-center mb-2">
           <mat-form-field class="w-5/12">
             <input matInput placeholder="Key" [(ngModel)]="param.name"/>
@@ -54,7 +83,6 @@
               <input *ngSwitchCase="'number'" matInput type="number" placeholder="Value" [(ngModel)]="param.value"/>
               <input *ngSwitchDefault matInput placeholder="Value" [(ngModel)]="param.value"/>
             </ng-container>
-
           </mat-form-field>
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="selectType(i, 'text')">Text</button>
@@ -67,26 +95,8 @@
         </div>
       </div>
     </div>
-    <button mat-raised-button color="accent" [disabled]="isLoading" (click)="sendRequest()">Scrape data</button>
-  </mat-card>
-  <mat-card class="flex-grow min-w-0 m-2 px-6">
-    <mat-card-header>
-      <mat-card-title class="!py-2 text-2xl font-bold"><h2>Scraping Result</h2></mat-card-title>
-      <button mat-icon-button color="primary" class="self-center ml-3" (click)="copyResult()"><mat-icon>content_copy</mat-icon></button>
-    </mat-card-header>
-    <mat-divider class="!mt-4"></mat-divider>
-    <mat-card-content class="!px-0 !pb-0 overflow-hidden">
-      <ng-container *ngIf="isLoading">
-        <div class="flex items-center justify-center absolute top-0 left-0 w-full h-full bg-gray-200 opacity-75">
-          <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
-        </div>
-      </ng-container>
-      <span class="text-red-500 text-sm" *ngIf="errorCodeResult" errorTranslate [errorCode]="errorCodeResult"
-            errorType="serverResponse"></span>
-      <p class="max-h-full font-mono whitespace-pre py-3 flex-grow text-xs overflow-auto" [ngClass]="{'opacity-20': isLoading}">
-        {{ JSON.stringify(scrapeResult, null, 2) }}
-      </p>
-    </mat-card-content>
+    <button mat-raised-button color="accent" [disabled]="isLoading" (click)="sendRequest()">
+      {{ currentConfiguration.id ? 'Update Configuration' : 'Create Configuration' }}
+    </button>
   </mat-card>
 </div>
-

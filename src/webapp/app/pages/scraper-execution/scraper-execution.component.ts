@@ -1,11 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {mockedResult} from "./mocked-values";
+import {jsonMockedResult} from "./mocked-values";
 import {ScraperService} from "../../services/scraper.service";
 import {PageModeService} from "../../services/page-mode.service";
 import {ScraperConfiguration} from "../../models/ScraperConfiguration";
 import {FormControl} from "@angular/forms";
 import {map, Observable, startWith} from "rxjs";
 import {ScraperConfigParamType, ScraperConfigurationParam} from "../../models/ScraperConfigurationParam";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-scraper-execution',
@@ -19,15 +20,16 @@ export class ScraperExecutionComponent implements OnInit, OnDestroy {
 
   currentlySelectedIdConfig?: number;
   url: string = '';
+  selectedConfigUrl: string = '';
   scraperParams: ScraperConfigurationParam[] = [];
   counterParamsAdded = 0;
 
   isLoading = false;
   errorCodeResult?: string;
-  scrapeResult?: any;
-  exampleResult: any = mockedResult;
+  scrapeResult: any = JSON.parse(jsonMockedResult);
 
-  constructor(private scraperService: ScraperService, private pageMode: PageModeService) {
+  constructor(private scraperService: ScraperService, private pageMode: PageModeService,
+              private snackbarService: MatSnackBar) {
   }
 
   ngOnInit(): void {
@@ -56,6 +58,7 @@ export class ScraperExecutionComponent implements OnInit, OnDestroy {
     if(value.id != this.currentlySelectedIdConfig) {
       this.currentlySelectedIdConfig = value.id;
       this.url = value.urlStyle;
+      this.selectedConfigUrl = value.configurationUrl;
       this.scraperParams = [...value.params];
     }
   }
@@ -98,11 +101,20 @@ export class ScraperExecutionComponent implements OnInit, OnDestroy {
   }
 
   addParam() {
-    this.scraperParams.push({name: `param${this.counterParamsAdded++}`, value: '', type: 'text'});
+    this.scraperParams.push({name: `param${this.counterParamsAdded++}`, value: '', type: 'text', id: null, fileConfigId: null});
   }
 
   removeParam(index: number) {
     this.scraperParams.splice(index, 1);
+  }
+
+  copyResult() {
+    let text = "";
+    navigator.clipboard.writeText(this.scrapeResult)
+      .then(() => text = "Result copied to clipboard!")
+      .catch(() => text = "Something went wrong!")
+      .finally(() => this.snackbarService.open(text, undefined,
+                                    {verticalPosition: "top", duration: 1000}));
   }
 
   sendRequest() {
@@ -114,7 +126,7 @@ export class ScraperExecutionComponent implements OnInit, OnDestroy {
 
     this.errorCodeResult = undefined;
     this.isLoading = true;
-    this.scraperService.runScraper(this.url, cleanParams).subscribe({
+    this.scraperService.runScraper(this.url, this.selectedConfigUrl, cleanParams).subscribe({
       next: res => {
         this.scrapeResult = res
       },

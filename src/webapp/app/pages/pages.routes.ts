@@ -3,6 +3,7 @@ import {HomeComponent} from "./home/home.component";
 import {LoginComponent} from "./login/login.component";
 import {RegisterComponent} from "./register/register.component";
 import {ScraperExecutionComponent} from "./scraper-execution/scraper-execution.component";
+import {ScraperCreationComponent} from "./scraper-creation/scraper-creation.component";
 
 export const PAGES_ROUTES: Route[] = [
   {
@@ -20,5 +21,9 @@ export const PAGES_ROUTES: Route[] = [
   {
     path: 'scraper',
     component: ScraperExecutionComponent
+  },
+  {
+    path: 'scraper-creation',
+    component: ScraperCreationComponent
   }
 ]

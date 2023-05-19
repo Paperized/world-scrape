@@ -22,6 +22,7 @@ public class ScraperFileConfigDTO implements Dto<ScraperFileConfiguration> {
   private String name;
   private String description;
   private String urlStyle;
+  private String configurationUrl;
   private List<ScraperFileParamDTO> params;
 
   public static ScraperFileConfigDTO fullFileConfig(ScraperFileConfiguration fileParameter) {
@@ -34,6 +35,7 @@ public class ScraperFileConfigDTO implements Dto<ScraperFileConfiguration> {
       fileParameter.getName(),
       fileParameter.getDescription(),
       fileParameter.getUrlStyle(),
+      fileParameter.getConfigurationUrl(),
       paramDTOS
     );
   }
@@ -45,6 +47,7 @@ public class ScraperFileConfigDTO implements Dto<ScraperFileConfiguration> {
       name,
       description,
       urlStyle,
+      configurationUrl,
       params.stream().map(ScraperFileParamDTO::toEntity).collect(Collectors.toList())
     );
   }

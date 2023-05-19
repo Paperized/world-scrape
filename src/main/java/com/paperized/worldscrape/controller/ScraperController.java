@@ -26,8 +26,15 @@ public class ScraperController {
     return scraperService.getAllFileConfig(ScraperFileConfigDTO::fullFileConfig);
   }
 
-  @PostMapping("/file-configs/create")
-  public ScraperFileConfigDTO createFileConfig(@RequestBody ScraperFileConfigDTO scraperFileConfigDTO) {
-    return scraperService.createFileConfig(scraperFileConfigDTO, ScraperFileConfigDTO::fullFileConfig);
+  @PostMapping("/file-configs/create-or-update")
+  public ScraperFileConfigDTO createOrUpdateFileConfig(@RequestBody CreateOrUpdateScraperDTO scraperFileConfigDTO) {
+    return scraperService.createOrUpdateFileConfig(scraperFileConfigDTO, ScraperFileConfigDTO::fullFileConfig);
   }
+
+  @DeleteMapping("/file-configs/{id}")
+  public void deleteFileConfig(@PathVariable Long id) {
+    scraperService.deleteFileConfig(id);
+  }
+
+  public record CreateOrUpdateScraperDTO(ScraperFileConfigDTO configuration, String configText) {}
 }

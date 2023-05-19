@@ -16,13 +16,17 @@ import {MatMenuModule} from "@angular/material/menu";
 import {MatSelectModule} from "@angular/material/select";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatListModule} from "@angular/material/list";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {ScraperCreationComponent} from "./scraper-creation/scraper-creation.component";
+import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
     HomeComponent,
     LoginComponent,
     RegisterComponent,
-    ScraperExecutionComponent
+    ScraperExecutionComponent,
+    ScraperCreationComponent
   ],
   imports: [
     CommonModule,
@@ -37,7 +41,9 @@ import {MatListModule} from "@angular/material/list";
     MatMenuModule,
     MatSelectModule,
     MatAutocompleteModule,
-    MatListModule
+    MatListModule,
+    MatSnackBarModule,
+    MatDialogModule
   ]
 })
 export class PagesModule {

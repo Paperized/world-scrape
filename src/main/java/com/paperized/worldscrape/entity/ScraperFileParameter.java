@@ -28,6 +28,6 @@ public class ScraperFileParameter {
   private String defaultValue;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "fileConfiguration_id")
+  @JoinColumn(name = "fileConfiguration_id", nullable = false)
   private ScraperFileConfiguration fileConfiguration;
 }
