@@ -1,12 +1,11 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {jsonMockedResult} from "../scraper-execution/mocked-values";
 import {ScraperConfiguration} from "../../models/ScraperConfiguration";
 import {FormControl} from "@angular/forms";
-import {filter, map, Observable, of, startWith, tap} from "rxjs";
+import {filter, map, Observable, of, startWith} from "rxjs";
 import {ScraperService} from "../../services/scraper.service";
 import {PageModeService} from "../../services/page-mode.service";
 import {ScraperConfigParamType} from "../../models/ScraperConfigurationParam";
-import {MatAutocompleteTrigger} from "@angular/material/autocomplete";
 import {YesNoDialog} from "../../shared/yes-no-dialog/yes-no-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 
@@ -24,8 +23,9 @@ export class ScraperCreationComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   errorCodeResult?: string;
   currentConfigurationText: string = jsonMockedResult;
-  currentConfiguration: ScraperConfiguration = new ScraperConfiguration(null, "", "", "", []);
+  currentConfiguration: ScraperConfiguration = new ScraperConfiguration(null, "", "", "", "PRIVATE", []);
   counterParamsAdded: number = 0;
+  isPublicPolicy: boolean = false;
 
   constructor(private scraperService: ScraperService, private pageMode: PageModeService, public dialogService: MatDialog) {
   }
@@ -61,6 +61,7 @@ export class ScraperCreationComponent implements OnInit, OnDestroy {
 
     if (value.id != this.currentConfiguration.id) {
       this.currentConfiguration = structuredClone(value);
+      this.isPublicPolicy = this.currentConfiguration.policy == 'PUBLIC';
       this.scraperService.getConfigurationText(this.currentConfiguration).subscribe({
         next: t => this.currentConfigurationText = t
       });
@@ -70,7 +71,8 @@ export class ScraperCreationComponent implements OnInit, OnDestroy {
   resetConfigurationSelected() {
     this.isResettingAutocompleteControl = true;
     this.configAutocompleteControl.setValue('');
-    this.currentConfiguration = new ScraperConfiguration(null, "", "", "", []);
+    this.currentConfiguration = new ScraperConfiguration(null, "", "", "", "PRIVATE", []);
+    this.isPublicPolicy = false;
     this.currentConfigurationText = "";
     this.filteredOptions = of([...this.configurations]);
     this.isResettingAutocompleteControl = false;
@@ -85,7 +87,8 @@ export class ScraperCreationComponent implements OnInit, OnDestroy {
         this.currentConfiguration.id = null;
         this.currentConfiguration.params.forEach(x => x.id = x.fileConfigId = null);
       } else {
-        this.currentConfiguration = new ScraperConfiguration(null, "", "", "", []);
+        this.currentConfiguration = new ScraperConfiguration(null, "", "", "", "PRIVATE", []);
+        this.isPublicPolicy = false;
         this.currentConfigurationText = "";
       }
 
@@ -106,7 +109,7 @@ export class ScraperCreationComponent implements OnInit, OnDestroy {
   }
 
   displayFn(config: ScraperConfiguration): string {
-    return config && config.name ? config.name : '';
+    return config && config.name ? `${config.name} (${config.userUsername})[${config.policy.toLowerCase()}]` : '';
   }
 
   private _filter(name: string): ScraperConfiguration[] {
@@ -151,6 +154,7 @@ export class ScraperCreationComponent implements OnInit, OnDestroy {
 
   sendRequest() {
     this.isLoading = true;
+    this.currentConfiguration.policy = this.isPublicPolicy ? 'PUBLIC' : 'PRIVATE';
     this.scraperService.saveOrUpdateConfiguration(this.currentConfiguration, this.currentConfigurationText).subscribe({
       next: res => {
         const prevConfigIndex = this.configurations.findIndex(x => x.id == this.currentConfiguration.id);
@@ -160,6 +164,7 @@ export class ScraperCreationComponent implements OnInit, OnDestroy {
           this.configurations[prevConfigIndex] = res;
 
         this.currentConfiguration = res;
+        this.isPublicPolicy = this.currentConfiguration.policy == 'PUBLIC';
         this.configAutocompleteControl.setValue(res);
         this.errorCodeResult = undefined;
       },

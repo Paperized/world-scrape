@@ -3,8 +3,12 @@ package com.paperized.worldscrape.serviceImpl;
 import com.paperized.worldscrape.controller.ScraperController;
 import com.paperized.worldscrape.dto.ScraperFileConfigDTO;
 import com.paperized.worldscrape.entity.ScraperFileConfiguration;
+import com.paperized.worldscrape.entity.User;
+import com.paperized.worldscrape.entity.utils.ScraperConfigPolicy;
 import com.paperized.worldscrape.exception.ScraperRequestFailedException;
 import com.paperized.worldscrape.repository.ScraperFileConfigurationRepository;
+import com.paperized.worldscrape.security.util.AuthenticatedUser;
+import com.paperized.worldscrape.security.util.SecurityUtils;
 import com.paperized.worldscrape.service.ScraperService;
 import com.paperized.worldscrape.util.MapperUtil;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -24,6 +28,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.paperized.worldscrape.security.AuthRole.SIMPLE_ROLE_ADMIN;
 
 @Service
 public class ScraperServiceImpl implements ScraperService {
@@ -59,7 +65,17 @@ public class ScraperServiceImpl implements ScraperService {
 
   @Override
   public List<ScraperFileConfigDTO> getAllFileConfig(Function<ScraperFileConfiguration, ScraperFileConfigDTO> mapFn) {
-    return scraperFileConfigurationRepository.findAll().stream().map(x -> MapperUtil.mapTo(x, mapFn)).collect(Collectors.toList());
+    AuthenticatedUser authenticatedUser = SecurityUtils.getCurrentUserOrNull();
+    List<ScraperFileConfiguration> scraperFileConfigurations;
+    if(authenticatedUser == null) {
+      scraperFileConfigurations = scraperFileConfigurationRepository.findAllByPolicy(ScraperConfigPolicy.PUBLIC);
+    } else if(authenticatedUser.getAuthorities().contains(SIMPLE_ROLE_ADMIN)) {
+      scraperFileConfigurations = scraperFileConfigurationRepository.findAll();
+    } else {
+      scraperFileConfigurations = scraperFileConfigurationRepository.findAllByCreatedBy_IdOrPolicy(authenticatedUser.getId(), ScraperConfigPolicy.PUBLIC);
+    }
+
+    return scraperFileConfigurations.stream().map(x -> MapperUtil.mapTo(x, mapFn)).collect(Collectors.toList());
   }
 
   @Override
@@ -70,10 +86,20 @@ public class ScraperServiceImpl implements ScraperService {
     boolean isNew = fileConfiguration.getId() == null;
     String configUrl = "";
 
+    AuthenticatedUser authenticatedUser = SecurityUtils.getCurrentUser();
+
     if (!isNew) {
       configUrl = String.format("%s/%d.yaml", amazonClient.getStoragePath(), fileConfiguration.getId());
       fileConfiguration.fileParameters.forEach(x -> x.setFileConfiguration(fileConfiguration));
+      if(!authenticatedUser.getAuthorities().contains(SIMPLE_ROLE_ADMIN)) {
+        if(scraperFileConfigurationRepository.existsByIdAndCreatedBy_Id(fileConfiguration.getId(), authenticatedUser.getId())) {
+          fileConfiguration.getCreatedBy().setId(authenticatedUser.getId());
+        } else {
+          throw new IllegalArgumentException("You are not allowed to update this configuration");
+        }
+      }
     } else {
+      fileConfiguration.setCreatedBy(new User(authenticatedUser.getId()));
       fileConfiguration.fileParameters.forEach(x -> {
         x.setId(null);
         x.setFileConfiguration(fileConfiguration);
@@ -108,7 +134,17 @@ public class ScraperServiceImpl implements ScraperService {
   }
 
   private ScraperFileConfiguration _deleteFileConfigTx(Long id) {
-    Optional<ScraperFileConfiguration> fileConfigurationOptional = this.scraperFileConfigurationRepository.findById(id);
+    AuthenticatedUser authenticatedUser = SecurityUtils.getCurrentUser();
+    Optional<ScraperFileConfiguration> fileConfigurationOptional;
+    if(authenticatedUser.getAuthorities().contains(SIMPLE_ROLE_ADMIN)) {
+      fileConfigurationOptional = this.scraperFileConfigurationRepository.findById(id);
+    } else {
+      fileConfigurationOptional = this.scraperFileConfigurationRepository.findByIdAndCreatedBy_Id(id, authenticatedUser.getId());
+      if(fileConfigurationOptional.isEmpty()) {
+        throw new IllegalArgumentException("You are not allowed to delete this configuration");
+      }
+    }
+
     if(fileConfigurationOptional.isPresent()) {
       ScraperFileConfiguration fileConfiguration = fileConfigurationOptional.get();
       this.scraperFileConfigurationRepository.deleteById(fileConfiguration.getId());

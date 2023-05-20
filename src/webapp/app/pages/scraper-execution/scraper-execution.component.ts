@@ -68,7 +68,7 @@ export class ScraperExecutionComponent implements OnInit, OnDestroy {
   }
 
   displayFn(config: ScraperConfiguration): string {
-    return config && config.name ? config.name : '';
+    return config && config.name ? `${config.name} (${config.userUsername})` : '';
   }
 
   private _filter(name: string): ScraperConfiguration[] {

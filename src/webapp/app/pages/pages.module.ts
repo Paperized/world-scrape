@@ -19,6 +19,7 @@ import {MatListModule} from "@angular/material/list";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {ScraperCreationComponent} from "./scraper-creation/scraper-creation.component";
 import {MatDialogModule} from "@angular/material/dialog";
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 
 @NgModule({
   declarations: [
@@ -28,23 +29,24 @@ import {MatDialogModule} from "@angular/material/dialog";
     ScraperExecutionComponent,
     ScraperCreationComponent
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    RouterModule.forChild(PAGES_ROUTES),
-    MatCardModule,
-    MatInputModule,
-    FormsModule,
-    MatButtonModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatMenuModule,
-    MatSelectModule,
-    MatAutocompleteModule,
-    MatListModule,
-    MatSnackBarModule,
-    MatDialogModule
-  ]
+    imports: [
+        CommonModule,
+        SharedModule,
+        RouterModule.forChild(PAGES_ROUTES),
+        MatCardModule,
+        MatInputModule,
+        FormsModule,
+        MatButtonModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatMenuModule,
+        MatSelectModule,
+        MatAutocompleteModule,
+        MatListModule,
+        MatSnackBarModule,
+        MatDialogModule,
+        MatSlideToggleModule
+    ]
 })
 export class PagesModule {
 }

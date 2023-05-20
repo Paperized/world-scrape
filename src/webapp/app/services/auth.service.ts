@@ -5,13 +5,14 @@ import {map, Observable} from "rxjs";
 import {AccountService} from "./account.service";
 import {Login} from "../models/Login";
 import {Register} from "../models/Register";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   BASE_API = SERVER_API_URL + '/auth';
-  constructor(private httpClient: HttpClient, private accountService: AccountService) { }
+  constructor(private httpClient: HttpClient, private accountService: AccountService, private router: Router) { }
 
   login(data: Login) {
     return this.httpClient.post<{jwtToken: string}>(this.BASE_API + '/login', data)
@@ -26,6 +27,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('authenticationToken');
     this.accountService.clearCurrentAccount();
+    this.router.navigate(['/'])
   }
 
   private authenticationSuccess(jwt_token: string) {

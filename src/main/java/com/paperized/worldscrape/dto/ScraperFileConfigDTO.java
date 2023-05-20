@@ -3,6 +3,8 @@ package com.paperized.worldscrape.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.paperized.worldscrape.dto.utils.Dto;
 import com.paperized.worldscrape.entity.ScraperFileConfiguration;
+import com.paperized.worldscrape.entity.User;
+import com.paperized.worldscrape.entity.utils.ScraperConfigPolicy;
 import com.paperized.worldscrape.entity.utils.ScraperFileParamType;
 import com.paperized.worldscrape.util.MapperUtil;
 import lombok.AllArgsConstructor;
@@ -23,7 +25,10 @@ public class ScraperFileConfigDTO implements Dto<ScraperFileConfiguration> {
   private String description;
   private String urlStyle;
   private String configurationUrl;
+  private String policy;
   private List<ScraperFileParamDTO> params;
+  private Long userId;
+  private String userUsername;
 
   public static ScraperFileConfigDTO fullFileConfig(ScraperFileConfiguration fileParameter) {
     List<ScraperFileParamDTO> paramDTOS = fileParameter.getFileParameters().stream()
@@ -36,19 +41,26 @@ public class ScraperFileConfigDTO implements Dto<ScraperFileConfiguration> {
       fileParameter.getDescription(),
       fileParameter.getUrlStyle(),
       fileParameter.getConfigurationUrl(),
-      paramDTOS
+      fileParameter.getPolicy().name(),
+      paramDTOS,
+      fileParameter.getCreatedBy().getId(),
+      fileParameter.getCreatedBy().getUsername()
     );
   }
 
   @Override
   public ScraperFileConfiguration toEntity() {
+    User user = new User();
+    user.setId(userId);
     return new ScraperFileConfiguration(
       id,
       name,
       description,
       urlStyle,
       configurationUrl,
-      params.stream().map(ScraperFileParamDTO::toEntity).collect(Collectors.toList())
+      ScraperConfigPolicy.valueOf(policy == null ? "PRIVATE" : policy),
+      params.stream().map(ScraperFileParamDTO::toEntity).collect(Collectors.toList()),
+      user
     );
   }
 }

@@ -30,4 +30,8 @@ public class ScraperFileParameter {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "fileConfiguration_id", nullable = false)
   private ScraperFileConfiguration fileConfiguration;
+
+  public ScraperFileParameter(Long id) {
+    this.id = id;
+  }
 }

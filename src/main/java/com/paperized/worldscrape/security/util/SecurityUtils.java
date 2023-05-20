@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.paperized.worldscrape.security.AuthRole.ANONYMOUS;
+import static com.paperized.worldscrape.security.AuthRole.SIMPLE_ROLE_ANONYMOUS;
+
 public class SecurityUtils {
   public static void setCurrentAuthentication(AuthenticatedUser authenticatedUser, HttpServletRequest request) {
     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -34,11 +37,17 @@ public class SecurityUtils {
 
   public static AuthenticatedUser getCurrentUser() {
     Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
-    return currentAuth != null ? (AuthenticatedUser) currentAuth.getPrincipal() : null;
+    if (!(currentAuth.getPrincipal() instanceof AuthenticatedUser)) throw new RuntimeException("No current user");
+    return (AuthenticatedUser) currentAuth.getPrincipal();
+  }
+
+  public static AuthenticatedUser getCurrentUserOrNull() {
+    Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+    return currentAuth.getAuthorities().contains(SIMPLE_ROLE_ANONYMOUS) ? null : (AuthenticatedUser) currentAuth.getPrincipal();
   }
 
   public static Set<? extends GrantedAuthority> getCurrentRoles() {
     Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
-    return currentAuth != null ? (Set<? extends GrantedAuthority>) ((AuthenticatedUser) currentAuth.getPrincipal()).getAuthorities() : Set.of();
+    return currentAuth.getAuthorities().contains(SIMPLE_ROLE_ANONYMOUS) ? Set.of() : (Set<? extends GrantedAuthority>) ((AuthenticatedUser) currentAuth.getPrincipal()).getAuthorities();
   }
 }

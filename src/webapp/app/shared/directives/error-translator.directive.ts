@@ -1,6 +1,6 @@
 import {Directive, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {TranslateService} from "@ngx-translate/core";
-import {Observable, Subscription} from "rxjs";
+import {Subscription} from "rxjs";
 
 @Directive({
   selector: '[errorTranslate]'

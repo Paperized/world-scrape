@@ -11,6 +11,7 @@ import {SharedModule} from "../shared/shared.module";
 import { ErrorComponent } from './error/error.component';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListModule} from "@angular/material/list";
+import {MatMenuModule} from "@angular/material/menu";
 
 
 @NgModule({
@@ -20,15 +21,16 @@ import {MatListModule} from "@angular/material/list";
     FooterComponent,
     ErrorComponent
   ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    RouterModule,
-    MatIconModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatListModule
-  ]
+    imports: [
+        CommonModule,
+        SharedModule,
+        RouterModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatSidenavModule,
+        MatListModule,
+        MatMenuModule
+    ]
 })
 export class LayoutModule { }

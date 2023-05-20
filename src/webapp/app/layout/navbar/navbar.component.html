@@ -5,23 +5,36 @@
     </button>
     <a routerLink="/">{{ StoreName }}</a>
     <span class="flex-auto"></span>
-    <div class="hidden sm:block h-full [&>a]:!h-full">
+    <div class="hidden sm:block h-full [&>a]:!h-full [&>a]:!rounded-none">
       <!-- The following menu items will be hidden on both SM and XS screen sizes -->
       <a routerLink="/scraper" routerLinkActive="active-link-navbar" mat-button>Try it</a>
-      <a *isAuthenticated="true" routerLink="/scraper-creation" routerLinkActive="active-link-navbar" mat-button>Make one</a>
+      <a *isAuthenticated="true" routerLink="/scraper-creation" routerLinkActive="active-link-navbar" mat-button>Make
+        one</a>
       <a *isAuthenticated="false" routerLink="/login" routerLinkActive="active-link-navbar" mat-button>Login</a>
       <a *isAuthenticated="false" routerLink="/register" routerLinkActive="active-link-navbar" mat-button>Register</a>
+      <a *isAuthenticated="true" mat-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
+        <div class="flex items-center">
+          <mat-icon>person</mat-icon>
+          <span class="mx-2">{{ currentAccount?.username }}</span>
+          <mat-icon>{{menuTrigger.menuOpen ? 'arrow_drop_up' : 'arrow_drop_down'}}</mat-icon>
+        </div>
+      </a>
+      <mat-menu #menu="matMenu" xPosition="before">
+        <button mat-menu-item (click)="logout()">Logout</button>
+      </mat-menu>
     </div>
   </mat-toolbar-row>
 </mat-toolbar>
 
 <ng-template #sidenavTemplate>
   <mat-nav-list class="w-40 text-center">
-    <a (click)="sidenav?.toggle()" mat-list-item>Close</a>
+    <a *isAuthenticated="true" mat-list-item>Welcome {{ currentAccount!.username }}</a>
     <a routerLink="/scraper" routerLinkActive="active-link" mat-list-item>Try it</a>
-    <a *isAuthenticated="true" routerLink="/scraper-creation" routerLinkActive="active-link-navbar" mat-list-item>Make one</a>
+    <a *isAuthenticated="true" routerLink="/scraper-creation" routerLinkActive="active-link-navbar" mat-list-item>Make
+      one</a>
     <a *isAuthenticated="false" routerLink="/login" routerLinkActive="active-link" mat-list-item>Login</a>
     <a *isAuthenticated="false" routerLink="/register" routerLinkActive="active-link" mat-list-item>Register</a>
-  </mat-nav-list><
+    <a *isAuthenticated="true" mat-list-item (click)="logout()">Logout</a>
+  </mat-nav-list>
 </ng-template>
 
