@@ -1,15 +1,23 @@
-import {Directive, Input, OnDestroy, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, ElementRef, Input, OnDestroy, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
 import {AccountService} from "../../services/account.service";
 import {Subscription} from "rxjs";
 
 @Directive({
   selector: '[isAuthenticated]'
 })
-export class IsAuthenticatedDirective implements OnDestroy {
+export class IsAuthenticatedDirective implements OnInit, OnDestroy {
+  private mustBeAuthenticated: boolean = false;
   private observable?: Subscription;
 
   constructor(private templateRef: TemplateRef<any>, private viewContainer: ViewContainerRef,
-              private accountService: AccountService) { }
+              private accountService: AccountService) {
+  }
+
+  ngOnInit(): void {
+    this.observable = this.accountService.currentAccount$.subscribe(_ => {
+      this.updateView();
+    });
+  }
 
   ngOnDestroy(): void {
     this.observable?.unsubscribe();
@@ -17,13 +25,16 @@ export class IsAuthenticatedDirective implements OnDestroy {
 
   @Input()
   set isAuthenticated(mustBeAuthenticated: boolean) {
-    this.observable?.unsubscribe();
-    this.observable = this.accountService.currentAccount$.subscribe(x => {
-      if (mustBeAuthenticated == this.accountService.isAuthenticated()) {
-        this.viewContainer.createEmbeddedView(this.templateRef);
-      } else {
-        this.viewContainer.clear();
-      }
-    });
+    this.mustBeAuthenticated = mustBeAuthenticated;
+    this.updateView();
+  }
+
+  private updateView() {
+    if (this.mustBeAuthenticated == this.accountService.isAuthenticated()) {
+      this.viewContainer.clear();
+      this.viewContainer.createEmbeddedView(this.templateRef);
+    } else {
+      this.viewContainer.clear();
+    }
   }
 }

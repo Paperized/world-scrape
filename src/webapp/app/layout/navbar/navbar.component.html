@@ -19,9 +19,9 @@
   <mat-nav-list class="w-40 text-center">
     <a (click)="sidenav?.toggle()" mat-list-item>Close</a>
     <a routerLink="/scraper" routerLinkActive="active-link" mat-list-item>Try it</a>
-    <a routerLink="/scraper-creation" routerLinkActive="active-link-navbar" mat-button>Make one</a>
-    <a routerLink="/login" routerLinkActive="active-link" mat-list-item>Login</a>
-    <a routerLink="/register" routerLinkActive="active-link" mat-list-item>Register</a>
+    <a *isAuthenticated="true" routerLink="/scraper-creation" routerLinkActive="active-link-navbar" mat-list-item>Make one</a>
+    <a *isAuthenticated="false" routerLink="/login" routerLinkActive="active-link" mat-list-item>Login</a>
+    <a *isAuthenticated="false" routerLink="/register" routerLinkActive="active-link" mat-list-item>Register</a>
   </mat-nav-list><
 </ng-template>
 
