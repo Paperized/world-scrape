@@ -8,7 +8,7 @@ import {BehaviorSubject, Observable, of, tap} from "rxjs";
   providedIn: 'root'
 })
 export class AccountService {
-  BASE_API = SERVER_API_URL + '/user';
+  BASE_API = SERVER_API_URL + '/users';
   private _currentAccount: Readonly<Account> | null = null;
   currentAccount$ = new BehaviorSubject<Readonly<Account> | null>(null);
 

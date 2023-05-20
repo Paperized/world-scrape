@@ -4,6 +4,7 @@ import {LoginComponent} from "./login/login.component";
 import {RegisterComponent} from "./register/register.component";
 import {ScraperExecutionComponent} from "./scraper-execution/scraper-execution.component";
 import {ScraperCreationComponent} from "./scraper-creation/scraper-creation.component";
+import {authGuard} from "../guard/auth.guard";
 
 export const PAGES_ROUTES: Route[] = [
   {
@@ -24,6 +25,7 @@ export const PAGES_ROUTES: Route[] = [
   },
   {
     path: 'scraper-creation',
-    component: ScraperCreationComponent
+    component: ScraperCreationComponent,
+    canActivate: [authGuard]
   }
 ]

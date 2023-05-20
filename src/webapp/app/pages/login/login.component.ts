@@ -1,10 +1,9 @@
-import {ChangeDetectorRef, Component, ViewEncapsulation} from '@angular/core';
-import {AbstractControl, FormBuilder, FormControl, Validators} from "@angular/forms";
+import {Component} from '@angular/core';
+import {AbstractControl, FormBuilder, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
 import {Login} from "../../models/Login";
 import {Router} from "@angular/router";
-import {HttpErrorResponse} from "@angular/common/http";
-import {catchError} from "rxjs";
+import {AccountService} from "../../services/account.service";
 
 @Component({
   selector: 'app-login',
@@ -20,7 +19,11 @@ export class LoginComponent {
   });
 
   constructor(private formBuilder: FormBuilder, private router: Router,
-              private authService: AuthService) { }
+              private authService: AuthService, private accountService: AccountService) {
+    if(accountService.isAuthenticated()) {
+      router.navigate(['/']);
+    }
+  }
 
   onSubmit() {
     this.errorCodeResult = undefined;

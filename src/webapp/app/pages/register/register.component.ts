@@ -2,9 +2,8 @@ import {Component} from '@angular/core';
 import {AbstractControl, FormBuilder, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
-import {Login} from "../../models/Login";
 import {Register} from "../../models/Register";
-import {HttpErrorResponse} from "@angular/common/http";
+import {AccountService} from "../../services/account.service";
 
 @Component({
   selector: 'app-register',
@@ -21,7 +20,11 @@ export class RegisterComponent {
     confirmPassword: ['', [Validators.required, this.validateMatchingPassword(false)]]
   });
 
-  constructor(private formBuilder: FormBuilder, private router: Router, private authService: AuthService) {
+  constructor(private formBuilder: FormBuilder, private router: Router,
+              private authService: AuthService, private accountService: AccountService) {
+    if(accountService.isAuthenticated()) {
+      router.navigate(['/']);
+    }
   }
 
   onSubmit() {

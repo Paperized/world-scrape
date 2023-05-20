@@ -5,6 +5,8 @@ import {ErrorTranslatorDirective} from "./directives/error-translator.directive"
 import {YesNoDialog} from "./yes-no-dialog/yes-no-dialog.component";
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatButtonModule} from "@angular/material/button";
+import { IsAuthenticatedDirective } from './directives/is-authenticated.directive';
+import { HasAnyRolesDirective } from './directives/has-any-roles.directive';
 
 @NgModule({
   imports: [
@@ -15,11 +17,15 @@ import {MatButtonModule} from "@angular/material/button";
   exports: [
     TranslateModule,
     ErrorTranslatorDirective,
+    IsAuthenticatedDirective,
+    HasAnyRolesDirective,
     YesNoDialog
   ],
   declarations: [
     ErrorTranslatorDirective,
-    YesNoDialog
+    YesNoDialog,
+    IsAuthenticatedDirective,
+    HasAnyRolesDirective
   ]
 })
 export class SharedModule { }

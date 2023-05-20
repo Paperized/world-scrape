@@ -8,9 +8,9 @@
     <div class="hidden sm:block h-full [&>a]:!h-full">
       <!-- The following menu items will be hidden on both SM and XS screen sizes -->
       <a routerLink="/scraper" routerLinkActive="active-link-navbar" mat-button>Try it</a>
-      <a routerLink="/scraper-creation" routerLinkActive="active-link-navbar" mat-button>Make one</a>
-      <a routerLink="/login" routerLinkActive="active-link-navbar" mat-button>Login</a>
-      <a routerLink="/register" routerLinkActive="active-link-navbar" mat-button>Register</a>
+      <a *isAuthenticated="true" routerLink="/scraper-creation" routerLinkActive="active-link-navbar" mat-button>Make one</a>
+      <a *isAuthenticated="false" routerLink="/login" routerLinkActive="active-link-navbar" mat-button>Login</a>
+      <a *isAuthenticated="false" routerLink="/register" routerLinkActive="active-link-navbar" mat-button>Register</a>
     </div>
   </mat-toolbar-row>
 </mat-toolbar>
