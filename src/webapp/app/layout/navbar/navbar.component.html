@@ -11,7 +11,6 @@
       <a *isAuthenticated="true" routerLink="/scraper-creation" routerLinkActive="active-link-navbar" mat-button>Make
         one</a>
       <a *isAuthenticated="false" routerLink="/login" routerLinkActive="active-link-navbar" mat-button>Login</a>
-      <a *isAuthenticated="false" routerLink="/register" routerLinkActive="active-link-navbar" mat-button>Register</a>
       <a *isAuthenticated="true" mat-button [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
         <div class="flex items-center">
           <mat-icon>person</mat-icon>
