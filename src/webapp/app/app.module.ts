@@ -10,6 +10,7 @@ import {customInterceptors} from "./interceptor/interceptors";
 import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {LayoutModule} from "./layout/layout.module";
+import {WS_BACKEND_URL} from "../environments/environment";
 
 function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http);

@@ -1,0 +1,22 @@
+FROM node:18-alpine as build
+WORKDIR /app
+COPY package*.json .
+COPY angular.json .
+COPY tsconfig*.json .
+COPY tailwind.config.js .
+COPY src/webapp src/webapp
+RUN npm ci
+
+ARG WS_FE_CONFIG="production"
+RUN npm run build -- -c=$WS_FE_CONFIG
+
+FROM node:18-alpine
+COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/dist /app/dist
+WORKDIR /app
+
+RUN npm install -g http-server
+
+EXPOSE 4200
+
+CMD ["http-server", "-p", "4200", "-c-1", "./dist/webapp"]

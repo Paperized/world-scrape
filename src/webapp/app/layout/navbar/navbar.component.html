@@ -27,7 +27,7 @@
 
 <ng-template #sidenavTemplate>
   <mat-nav-list class="w-40 text-center">
-    <a *isAuthenticated="true" mat-list-item>Welcome {{ currentAccount!.username }}</a>
+    <a *isAuthenticated="true" mat-list-item>Welcome {{ currentAccount?.username }}</a>
     <a routerLink="/scraper" routerLinkActive="active-link" mat-list-item>Try it</a>
     <a *isAuthenticated="true" routerLink="/scraper-creation" routerLinkActive="active-link-navbar" mat-list-item>Make
       one</a>

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import {SERVER_API_URL} from "../constants";
 import {HttpClient} from "@angular/common/http";
 import {ScraperConfiguration} from "../models/ScraperConfiguration";
+import {WS_BACKEND_URL} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScraperService {
-  BASE_API = SERVER_API_URL + '/scraper';
+  BASE_API = WS_BACKEND_URL + '/scraper';
   constructor(private httpClient: HttpClient) { }
 
   runScraper(url: string, config_url: string, params: any) {

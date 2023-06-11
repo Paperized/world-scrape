@@ -6,10 +6,10 @@ import {
   HttpInterceptor, HttpErrorResponse
 } from '@angular/common/http';
 import {Observable, tap} from 'rxjs';
-import {SERVER_API_URL} from "../constants";
 import {AccountService} from "../services/account.service";
 import {AuthService} from "../services/auth.service";
 import {Router} from "@angular/router";
+import {WS_BACKEND_URL} from "../../environments/environment";
 
 @Injectable()
 export class AuthExpiredInterceptor implements HttpInterceptor {
@@ -22,7 +22,7 @@ export class AuthExpiredInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       tap({
         error: (err: HttpErrorResponse) => {
-          if(err.status === 401 && err.url && err.url.startsWith(SERVER_API_URL) && this.accountService.isAuthenticated()) {
+          if(err.status === 401 && err.url && err.url.startsWith(WS_BACKEND_URL) && this.accountService.isAuthenticated()) {
             this.authService.logout();
             this.router.navigate(['/login']);
           }

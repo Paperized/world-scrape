@@ -11,6 +11,7 @@ import com.paperized.worldscrape.security.util.AuthenticatedUser;
 import com.paperized.worldscrape.security.util.SecurityUtils;
 import com.paperized.worldscrape.service.ScraperService;
 import com.paperized.worldscrape.util.MapperUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -38,6 +39,9 @@ public class ScraperServiceImpl implements ScraperService {
   private final AmazonClient amazonClient;
   private final TransactionTemplate transactionTemplate;
 
+  @Value("${ws.scrapaper.url}")
+  private String wsScrapaperUrl;
+
   public ScraperServiceImpl(ScraperFileConfigurationRepository scraperFileConfigurationRepository, RestTemplateBuilder restTemplateBuilder, AmazonClient amazonClient, TransactionTemplate transactionTemplate) {
     this.scraperFileConfigurationRepository = scraperFileConfigurationRepository;
     this.restTemplate = restTemplateBuilder.build();
@@ -48,7 +52,7 @@ public class ScraperServiceImpl implements ScraperService {
   @Override
   public Map<String, Object> requestScraping(Map<String, Object> scrapeParameters) {
     try {
-      ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange("http://localhost:5100/", HttpMethod.POST,
+      ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(wsScrapaperUrl, HttpMethod.POST,
         new HttpEntity<>(scrapeParameters), new ParameterizedTypeReference<>() {
         });
       return responseEntity.getBody();
@@ -156,7 +160,7 @@ public class ScraperServiceImpl implements ScraperService {
 
   private void assertConfigurationText(String configText) {
     try {
-      ResponseEntity<ResponseConfigValidation> responseEntity = restTemplate.postForEntity("http://localhost:5100/check-config",
+      ResponseEntity<ResponseConfigValidation> responseEntity = restTemplate.postForEntity(wsScrapaperUrl.concat("/check-config"),
         new RequestConfigValidation(configText), ResponseConfigValidation.class);
       String errorMessage = responseEntity.getHeaders().getFirst("error-message");
       if (errorMessage != null)

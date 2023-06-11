@@ -5,6 +5,8 @@ import com.paperized.worldscrape.exception.EntityAlreadyExistsException;
 import com.paperized.worldscrape.exception.EntityNotFoundException;
 import com.paperized.worldscrape.exception.ScraperRequestFailedException;
 import org.hibernate.exception.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+  Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
   private final Map<String, String> constrainsErrorCodeMap;
 
   public GlobalExceptionHandler(@Qualifier("constraintsTranslator") Map<String, String> constrainsErrorCodeMap) {
@@ -107,6 +110,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiErrorResponse> internalErrorException(Exception exception) {
+    exception.printStackTrace();
     return new ResponseEntity<>(
       ApiErrorResponse.fromErrors(HttpStatus.INTERNAL_SERVER_ERROR,
         "internalError",

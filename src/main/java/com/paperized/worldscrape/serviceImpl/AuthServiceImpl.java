@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setEnabled(true);
 
-        Role role = roleRepository.findByName(AuthRole.USER).orElseThrow(RuntimeException::new);
+        Role role = roleRepository.findByName(AuthRole.USER).orElseThrow(() -> new RuntimeException("Role not found during registration"));
         user.getRoles().add(role);
 
         return new RegisterResponseDTO(userRepository.save(user).getId());
