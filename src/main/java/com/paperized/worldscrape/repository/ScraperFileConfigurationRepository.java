@@ -11,7 +11,6 @@ import java.util.Optional;
 
 public interface ScraperFileConfigurationRepository extends JpaRepository<ScraperFileConfiguration, Long> {
   boolean existsByIdAndCreatedBy_Id(Long id, Long createdBy);
-  Optional<ScraperFileConfiguration> findByIdAndCreatedBy_Id(Long id, Long createdBy);
   List<ScraperFileConfiguration> findAllByCreatedBy_IdOrPolicy(Long createdBy, ScraperConfigPolicy policy);
   List<ScraperFileConfiguration> findAllByPolicy(ScraperConfigPolicy policy);
 }

@@ -52,7 +52,7 @@ public class ScraperServiceImpl implements ScraperService {
   @Override
   public Map<String, Object> requestScraping(Map<String, Object> scrapeParameters) {
     try {
-      ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(wsScrapaperUrl, HttpMethod.POST,
+      ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(wsScrapaperUrl.concat("/scrape"), HttpMethod.POST,
         new HttpEntity<>(scrapeParameters), new ParameterizedTypeReference<>() {
         });
       return responseEntity.getBody();
@@ -132,30 +132,28 @@ public class ScraperServiceImpl implements ScraperService {
   @Override
   public void deleteFileConfig(Long id) {
     this.transactionTemplate.setReadOnly(false);
-    ScraperFileConfiguration deletedConfig = transactionTemplate.execute(status -> _deleteFileConfigTx(id));
-    if (deletedConfig != null)
-      amazonClient.removeFile(deletedConfig.getConfigurationUrl());
+    boolean deleted = Boolean.TRUE.equals(transactionTemplate.execute(status -> _deleteFileConfigTx(id)));
+    if (deleted)
+      amazonClient.removeFile(id + ".yaml");
   }
 
-  private ScraperFileConfiguration _deleteFileConfigTx(Long id) {
+  private boolean _deleteFileConfigTx(Long id) {
     AuthenticatedUser authenticatedUser = SecurityUtils.getCurrentUser();
-    Optional<ScraperFileConfiguration> fileConfigurationOptional;
+    boolean exists;
     if(authenticatedUser.getAuthorities().contains(SIMPLE_ROLE_ADMIN)) {
-      fileConfigurationOptional = this.scraperFileConfigurationRepository.findById(id);
+      exists = this.scraperFileConfigurationRepository.existsById(id);
     } else {
-      fileConfigurationOptional = this.scraperFileConfigurationRepository.findByIdAndCreatedBy_Id(id, authenticatedUser.getId());
-      if(fileConfigurationOptional.isEmpty()) {
+      exists = this.scraperFileConfigurationRepository.existsByIdAndCreatedBy_Id(id, authenticatedUser.getId());
+      if(!exists) {
         throw new IllegalArgumentException("You are not allowed to delete this configuration");
       }
     }
 
-    if(fileConfigurationOptional.isPresent()) {
-      ScraperFileConfiguration fileConfiguration = fileConfigurationOptional.get();
-      this.scraperFileConfigurationRepository.deleteById(fileConfiguration.getId());
-      return fileConfiguration;
+    if(exists) {
+      this.scraperFileConfigurationRepository.deleteById(id);
     }
 
-    return null;
+    return exists;
   }
 
   private void assertConfigurationText(String configText) {

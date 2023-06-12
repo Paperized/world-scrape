@@ -1,7 +1,17 @@
-FROM openjdk:17-alpine
+#FROM amazoncorretto:17-alpine
+FROM arm64v8/amazoncorretto:17-alpine
 COPY /target/*.jar app.jar
+
+ENV SLEEP_FOR_DB=5
+
+RUN echo "#!/bin/sh" > wait-for-it.sh
+RUN echo "sleep ${SLEEP_FOR_DB}" >> wait-for-it.sh
+RUN echo "java -jar /app.jar" >> wait-for-it.sh
+
+RUN chmod +x wait-for-it.sh
+
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["./wait-for-it.sh"]
 
 #FROM openjdk:17-alpine as build
 #COPY mvnw .

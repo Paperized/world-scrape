@@ -38,7 +38,7 @@ public class SecurityConfig {
     "/swagger-ui/**",
     // other public endpoints of your API may be appended to this array
     // all api by default public, use method security to secure endpoints
-    "/api/v1/**"
+    "/api/**"
   };
 
   private final CustomUserDetailsService customUserDetailsService;

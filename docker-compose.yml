@@ -3,6 +3,7 @@ services:
   frontend:
     container_name: ws-frontend-container
     image: ws-frontend:latest
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile.angular
@@ -15,13 +16,14 @@ services:
   backend:
     container_name: ws-backend-container
     image: ws-backend:latest
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile.spring
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/worldscrape?serverTimezone=UTC
 
-      WS_SCRAPAPER_URL: http://ws-scrapaper-container:5100
+      WS_SCRAPAPER_URL: http://ws-scrapaper-container:5100/api
       #WS_FRONTEND_URL: http://ws-frontend-container:4200
       WS_JWT_SECRET_KEY: 3s6v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVjgfjtytfbutfuyvhdsdfghnmljgxschdrvftjk
 
@@ -39,6 +41,7 @@ services:
     container_name: ws-scrapaper-container
     image: ws-scrapaper:latest
     build: ./scrapaper
+    restart: always
     environment:
       WS_JWT_SECRET_KEY: 3s6v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVjgfjtytfbutfuyvhdsdfghnmljgxschdrvftjk
     ports:
@@ -46,8 +49,11 @@ services:
   mysql:
     container_name: mysql-container
     image: mysql:8
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: download99
       MYSQL_DATABASE: worldscrape
     ports:
       - "3307:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/v1/scraper")
+@RequestMapping("/scraper")
 public class ScraperController {
   private final ScraperService scraperService;
 
