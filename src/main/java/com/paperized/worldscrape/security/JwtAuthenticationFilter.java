@@ -9,6 +9,8 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,7 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+  Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
   private final JwtService jwtService;
 
   public JwtAuthenticationFilter(JwtService jwtService) {
@@ -82,9 +85,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ObjectMapper objectMapper = new ObjectMapper();
     String jsonError;
     try {
+      logger.info("[EXC] AuthenticationException: {}", errorCode);
       jsonError = objectMapper.writeValueAsString(
         ApiErrorResponse.fromErrors(errorStatus, errorCode, errorMessage));
     } catch (JsonProcessingException e) {
+      logger.info("[EXC] UnexpectedException: (JWT) {}", e.getMessage());
       errorStatus = HttpStatus.INTERNAL_SERVER_ERROR;
       jsonError = "{}";
     }

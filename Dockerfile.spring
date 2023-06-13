@@ -13,6 +13,8 @@ RUN chmod +x wait-for-it.sh
 EXPOSE 8080
 ENTRYPOINT ["./wait-for-it.sh"]
 
+#FROM amazoncorretto:17-alpine
+#FROM arm64v8/amazoncorretto:17-alpine
 #FROM openjdk:17-alpine as build
 #COPY mvnw .
 #COPY .mvn .mvn

@@ -2,6 +2,8 @@ package com.paperized.worldscrape.security;
 
 import com.paperized.worldscrape.security.util.AuthenticatedUser;
 import com.paperized.worldscrape.security.util.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -40,6 +42,7 @@ public class SecurityConfig {
     // all api by default public, use method security to secure endpoints
     "/api/**"
   };
+  Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
   private final CustomUserDetailsService customUserDetailsService;
   private final JwtAuthenticationFilter jwtAuthFilter;
@@ -51,6 +54,7 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    logger.info("[CONFIG] filterChain: all api by default public, use method security to secure endpoints");
     http.csrf().disable()
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests()

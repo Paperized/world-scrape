@@ -12,6 +12,8 @@ import com.paperized.worldscrape.security.AuthRole;
 import com.paperized.worldscrape.security.JwtService;
 import com.paperized.worldscrape.service.AuthService;
 import com.paperized.worldscrape.util.MapperUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,39 +22,44 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-    private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+  private Logger logging = LoggerFactory.getLogger(AuthServiceImpl.class);
+  private final AuthenticationManager authenticationManager;
+  private final UserRepository userRepository;
+  private final RoleRepository roleRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
 
-    public AuthServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository,
-                           RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-    }
+  public AuthServiceImpl(AuthenticationManager authenticationManager, UserRepository userRepository,
+                         RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    this.authenticationManager = authenticationManager;
+    this.userRepository = userRepository;
+    this.roleRepository = roleRepository;
+    this.passwordEncoder = passwordEncoder;
+    this.jwtService = jwtService;
+  }
 
-    @Override
-    public RegisterResponseDTO register(RegisterRequestDTO registerRequestDTO) {
-        User user = MapperUtil.mapTo(registerRequestDTO, RegisterRequestDTO::toUser);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setEnabled(true);
+  @Override
+  public RegisterResponseDTO register(RegisterRequestDTO registerRequestDTO) {
+    User user = MapperUtil.mapTo(registerRequestDTO, RegisterRequestDTO::toUser);
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    user.setEnabled(true);
 
-        Role role = roleRepository.findByName(AuthRole.USER).orElseThrow(() -> new RuntimeException("Role not found during registration"));
-        user.getRoles().add(role);
+    Role role = roleRepository.findByName(AuthRole.USER).orElseThrow(() -> new RuntimeException("Unexpected error, base user role not found"));
+    user.getRoles().add(role);
 
-        return new RegisterResponseDTO(userRepository.save(user).getId());
-    }
+    RegisterResponseDTO registerResponseDTO = new RegisterResponseDTO(userRepository.save(user).getId());
+    logging.info("[ACTION] userRegistered: {}", registerResponseDTO.getId());
+    return registerResponseDTO;
+  }
 
-    @Override
-    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
-      Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword()));
+  @Override
+  public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
+    Authentication authentication = authenticationManager.authenticate(
+      new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword()));
 
-      User user = (User) authentication.getPrincipal();
-      return new LoginResponseDTO(jwtService.generateToken(user));
-    }
+    User user = (User) authentication.getPrincipal();
+    LoginResponseDTO loginResponseDTO = new LoginResponseDTO(jwtService.generateToken(user));
+    logging.info("[ACTION] userLogin: {}", user.getId());
+    return loginResponseDTO;
+  }
 }

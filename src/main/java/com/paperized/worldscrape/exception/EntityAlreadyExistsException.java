@@ -1,11 +1,12 @@
 package com.paperized.worldscrape.exception;
 
-public class EntityAlreadyExistsException extends RuntimeException {
-    public EntityAlreadyExistsException(String message) {
-        super(message);
-    }
+import lombok.Getter;
 
-    public EntityAlreadyExistsException() {
-        super("Entity already exists!");
-    }
+@Getter
+public class EntityAlreadyExistsException extends RuntimeException {
+  private final String entityName;
+  public EntityAlreadyExistsException(String entityName) {
+    super(entityName + " already exists.");
+    this.entityName = entityName;
+  }
 }

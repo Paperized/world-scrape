@@ -5,12 +5,14 @@ import com.paperized.worldscrape.dto.ScraperFileConfigDTO;
 import com.paperized.worldscrape.entity.ScraperFileConfiguration;
 import com.paperized.worldscrape.entity.User;
 import com.paperized.worldscrape.entity.utils.ScraperConfigPolicy;
+import com.paperized.worldscrape.exception.ActionNotPermittedException;
 import com.paperized.worldscrape.exception.ScraperRequestFailedException;
 import com.paperized.worldscrape.repository.ScraperFileConfigurationRepository;
 import com.paperized.worldscrape.security.util.AuthenticatedUser;
 import com.paperized.worldscrape.security.util.SecurityUtils;
 import com.paperized.worldscrape.service.ScraperService;
 import com.paperized.worldscrape.util.MapperUtil;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
@@ -34,6 +36,7 @@ import static com.paperized.worldscrape.security.AuthRole.SIMPLE_ROLE_ADMIN;
 
 @Service
 public class ScraperServiceImpl implements ScraperService {
+  private Logger logging = org.slf4j.LoggerFactory.getLogger(ScraperController.class);
   private final ScraperFileConfigurationRepository scraperFileConfigurationRepository;
   private final RestTemplate restTemplate;
   private final AmazonClient amazonClient;
@@ -55,6 +58,8 @@ public class ScraperServiceImpl implements ScraperService {
       ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(wsScrapaperUrl.concat("/scrape"), HttpMethod.POST,
         new HttpEntity<>(scrapeParameters), new ParameterizedTypeReference<>() {
         });
+
+      logging.info("[ACTION] scrape: {}|{}", scrapeParameters.get("url"), scrapeParameters.get("config_url"));
       return responseEntity.getBody();
     } catch (RestClientException exception) {
       if (!(exception instanceof HttpClientErrorException ex))
@@ -79,7 +84,9 @@ public class ScraperServiceImpl implements ScraperService {
       scraperFileConfigurations = scraperFileConfigurationRepository.findAllByCreatedBy_IdOrPolicy(authenticatedUser.getId(), ScraperConfigPolicy.PUBLIC);
     }
 
-    return scraperFileConfigurations.stream().map(x -> MapperUtil.mapTo(x, mapFn)).collect(Collectors.toList());
+    List<ScraperFileConfigDTO> result = scraperFileConfigurations.stream().map(x -> MapperUtil.mapTo(x, mapFn)).toList();
+    logging.info("[ACTION] getAllFileConfig: {}", result.size());
+    return result;
   }
 
   @Override
@@ -99,7 +106,7 @@ public class ScraperServiceImpl implements ScraperService {
         if(scraperFileConfigurationRepository.existsByIdAndCreatedBy_Id(fileConfiguration.getId(), authenticatedUser.getId())) {
           fileConfiguration.getCreatedBy().setId(authenticatedUser.getId());
         } else {
-          throw new IllegalArgumentException("You are not allowed to update this configuration");
+          throw new ActionNotPermittedException();
         }
       }
     } else {
@@ -118,6 +125,11 @@ public class ScraperServiceImpl implements ScraperService {
       outputConfiguration.setConfigurationUrl(configUrl);
       outputConfiguration = scraperFileConfigurationRepository.save(fileConfiguration);
     }
+
+    if(isNew)
+      logging.info("[ACTION] createFileConfig: {}", configUrl);
+    else
+      logging.info("[ACTION] updateFileConfig: {}", configUrl);
 
     try {
       amazonClient.uploadFile(outputConfiguration.getId().toString() + ".yaml", dto.configText());
@@ -145,12 +157,13 @@ public class ScraperServiceImpl implements ScraperService {
     } else {
       exists = this.scraperFileConfigurationRepository.existsByIdAndCreatedBy_Id(id, authenticatedUser.getId());
       if(!exists) {
-        throw new IllegalArgumentException("You are not allowed to delete this configuration");
+        throw new ActionNotPermittedException();
       }
     }
 
     if(exists) {
       this.scraperFileConfigurationRepository.deleteById(id);
+      logging.info("[ACTION] deleteFileConfig: {}", id);
     }
 
     return exists;
