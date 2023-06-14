@@ -9,6 +9,7 @@ services:
       dockerfile: Dockerfile.angular
       args:
         - WS_FE_CONFIG=staging
+        #- WS_FE_CONFIG=production
     ports:
       - "4200:4200"
     depends_on:
@@ -21,10 +22,10 @@ services:
       context: .
       dockerfile: Dockerfile.spring
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/worldscrape?serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/worldscrape?serverTimezone=UTC
 
-      WS_SCRAPAPER_URL: http://ws-scrapaper-container:5100/api
-      #WS_FRONTEND_URL: http://ws-frontend-container:4200
+      #WS_SCRAPAPER_URL: http://scrapaper:5100
+      #WS_FRONTEND_URL: https://world-scrape.com
       WS_JWT_SECRET_KEY: 3s6v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVjgfjtytfbutfuyvhdsdfghnmljgxschdrvftjk
 
       #AMZ_ACCESS_KEY: <your access key>
@@ -33,7 +34,7 @@ services:
       AMZ_BUCKET_NAME: world-scrape
       #AMZ_BUCKET_NAME: world-scrape-prod
     ports:
-      - "8080:8080"
+      - "6969:8080"
     depends_on:
       - mysql
       - scrapaper
@@ -57,3 +58,4 @@ services:
       - "3307:3306"
     volumes:
       - ./mysql:/var/lib/mysql
+      - ./sql_scripts/worldscrape.sql:/docker-entrypoint-initdb.d/1.sql

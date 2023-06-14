@@ -10,11 +10,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class PrefixApiConfiguration implements WebMvcConfigurer {
-  Logger logger = LoggerFactory.getLogger(PrefixApiConfiguration.class);
+  //Logger logger = LoggerFactory.getLogger(PrefixApiConfiguration.class);
   @Override
   public void configurePathMatch(PathMatchConfigurer configurer) {
-    logger.info("[CONFIG] configurePathMatch: every controller now starts with /api");
+    //logger.info("[CONFIG] configurePathMatch: every controller now starts with /api");
     WebMvcConfigurer.super.configurePathMatch(configurer);
-    configurer.addPathPrefix("api", HandlerTypePredicate.forAnnotation(RestController.class));
+    //configurer.addPathPrefix("api", HandlerTypePredicate.forAnnotation(RestController.class));
   }
 }
