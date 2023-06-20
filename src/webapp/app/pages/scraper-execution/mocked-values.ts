@@ -1,4 +1,5 @@
 export const jsonMockedResult ="{\n" +
+  "  \"values\": {\n" +
   "    \"title\": \"Cit Hotels Dea Palermo\",\n" +
   "    \"score_category\": \"N. 102 di 118 hotel a Sicilia\",\n" +
   "    \"locality\": \"Viale Regione Siciliana, 2620 Viale Regione Siciliana, 2620, 90145, Palermo, Sicilia Italia\",\n" +
@@ -34,4 +35,6 @@ export const jsonMockedResult ="{\n" +
   "        \"https://media-cdn.tripadvisor.com/media/photo-o/03/b1/84/fa/idea-hotel-palermo.jpg\",\n" +
   "        \"https://media-cdn.tripadvisor.com/media/photo-s/02/1c/28/88/idea-hotel-palermo.jpg\"\n" +
   "    ]\n" +
+  "  },\n" +
+  "  \"errors\": []\n" +
   "}";

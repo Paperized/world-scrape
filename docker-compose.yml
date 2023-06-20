@@ -26,7 +26,8 @@ services:
 
       #WS_SCRAPAPER_URL: http://scrapaper:5100
       #WS_FRONTEND_URL: https://world-scrape.com
-      WS_JWT_SECRET_KEY: 3s6v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVjgfjtytfbutfuyvhdsdfghnmljgxschdrvftjk
+      WS_JWT_SECRET_KEY: 3s6v9yAB&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVjgfjtytfbutfuyvhdsdfghnmljgxschdrvftjk
+
 
       #AMZ_ACCESS_KEY: <your access key>
       #AMZ_SECRET_KEY: <your secret key>
@@ -44,7 +45,10 @@ services:
     build: ./scrapaper
     restart: always
     environment:
-      WS_JWT_SECRET_KEY: 3s6v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVjgfjtytfbutfuyvhdsdfghnmljgxschdrvftjk
+      WS_JWT_SECRET_KEY: "3s6v9yAB&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVjgfjtytfbutfuyvhdsdfghnmljgxschdrvftjk"
+      #WS_FRONTEND_URL: https://world-scrape.com
+      CHROME_LOCATION: /usr/bin/chromium-browser
+      DRIVER_PATH: /usr/bin/chromedriver
     ports:
       - "5100:5100"
   mysql:

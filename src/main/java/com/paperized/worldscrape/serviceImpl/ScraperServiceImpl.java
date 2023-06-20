@@ -16,11 +16,8 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -28,9 +25,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static com.paperized.worldscrape.security.AuthRole.SIMPLE_ROLE_ADMIN;
 
@@ -53,32 +48,12 @@ public class ScraperServiceImpl implements ScraperService {
   }
 
   @Override
-  public Map<String, Object> requestScraping(Map<String, Object> scrapeParameters) {
-    try {
-      ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange(wsScrapaperUrl.concat("/scrape"), HttpMethod.POST,
-        new HttpEntity<>(scrapeParameters), new ParameterizedTypeReference<>() {
-        });
-
-      logging.info("[ACTION] scrape: {}|{}", scrapeParameters.get("url"), scrapeParameters.get("config_url"));
-      return responseEntity.getBody();
-    } catch (RestClientException exception) {
-      if (!(exception instanceof HttpClientErrorException ex))
-        throw exception;
-
-      String errorMessage = ex.getResponseHeaders() != null ?
-        ex.getResponseHeaders().getFirst("error-message") :
-        "No error message provided...";
-      throw new ScraperRequestFailedException(ex.getStatusCode(), errorMessage);
-    }
-  }
-
-  @Override
   public List<ScraperFileConfigDTO> getAllFileConfig(Function<ScraperFileConfiguration, ScraperFileConfigDTO> mapFn) {
     AuthenticatedUser authenticatedUser = SecurityUtils.getCurrentUserOrNull();
     List<ScraperFileConfiguration> scraperFileConfigurations;
-    if(authenticatedUser == null) {
+    if (authenticatedUser == null) {
       scraperFileConfigurations = scraperFileConfigurationRepository.findAllByPolicy(ScraperConfigPolicy.PUBLIC);
-    } else if(authenticatedUser.getAuthorities().contains(SIMPLE_ROLE_ADMIN)) {
+    } else if (authenticatedUser.getAuthorities().contains(SIMPLE_ROLE_ADMIN)) {
       scraperFileConfigurations = scraperFileConfigurationRepository.findAll();
     } else {
       scraperFileConfigurations = scraperFileConfigurationRepository.findAllByCreatedBy_IdOrPolicy(authenticatedUser.getId(), ScraperConfigPolicy.PUBLIC);
@@ -102,8 +77,8 @@ public class ScraperServiceImpl implements ScraperService {
     if (!isNew) {
       configUrl = String.format("%s/%d.yaml", amazonClient.getStoragePath(), fileConfiguration.getId());
       fileConfiguration.fileParameters.forEach(x -> x.setFileConfiguration(fileConfiguration));
-      if(!authenticatedUser.getAuthorities().contains(SIMPLE_ROLE_ADMIN)) {
-        if(scraperFileConfigurationRepository.existsByIdAndCreatedBy_Id(fileConfiguration.getId(), authenticatedUser.getId())) {
+      if (!authenticatedUser.getAuthorities().contains(SIMPLE_ROLE_ADMIN)) {
+        if (scraperFileConfigurationRepository.existsByIdAndCreatedBy_Id(fileConfiguration.getId(), authenticatedUser.getId())) {
           fileConfiguration.getCreatedBy().setId(authenticatedUser.getId());
         } else {
           throw new ActionNotPermittedException();
@@ -120,13 +95,13 @@ public class ScraperServiceImpl implements ScraperService {
     fileConfiguration.setConfigurationUrl(configUrl);
 
     ScraperFileConfiguration outputConfiguration = scraperFileConfigurationRepository.saveAndFlush(fileConfiguration);
-    if(isNew) {
+    if (isNew) {
       configUrl = String.format("%s/%d.yaml", amazonClient.getStoragePath(), fileConfiguration.getId());
       outputConfiguration.setConfigurationUrl(configUrl);
       outputConfiguration = scraperFileConfigurationRepository.save(fileConfiguration);
     }
 
-    if(isNew)
+    if (isNew)
       logging.info("[ACTION] createFileConfig: {}", configUrl);
     else
       logging.info("[ACTION] updateFileConfig: {}", configUrl);
@@ -152,16 +127,16 @@ public class ScraperServiceImpl implements ScraperService {
   private boolean _deleteFileConfigTx(Long id) {
     AuthenticatedUser authenticatedUser = SecurityUtils.getCurrentUser();
     boolean exists;
-    if(authenticatedUser.getAuthorities().contains(SIMPLE_ROLE_ADMIN)) {
+    if (authenticatedUser.getAuthorities().contains(SIMPLE_ROLE_ADMIN)) {
       exists = this.scraperFileConfigurationRepository.existsById(id);
     } else {
       exists = this.scraperFileConfigurationRepository.existsByIdAndCreatedBy_Id(id, authenticatedUser.getId());
-      if(!exists) {
+      if (!exists) {
         throw new ActionNotPermittedException();
       }
     }
 
-    if(exists) {
+    if (exists) {
       this.scraperFileConfigurationRepository.deleteById(id);
       logging.info("[ACTION] deleteFileConfig: {}", id);
     }
@@ -171,23 +146,18 @@ public class ScraperServiceImpl implements ScraperService {
 
   private void assertConfigurationText(String configText) {
     try {
-      ResponseEntity<ResponseConfigValidation> responseEntity = restTemplate.postForEntity(wsScrapaperUrl.concat("/check-config"),
-        new RequestConfigValidation(configText), ResponseConfigValidation.class);
-      String errorMessage = responseEntity.getHeaders().getFirst("error-message");
-      if (errorMessage != null)
-        throw new ScraperRequestFailedException(responseEntity.getStatusCode(), errorMessage);
-    } catch (RestClientException exception) {
-      if (!(exception instanceof HttpClientErrorException ex))
-        throw exception;
+      HttpEntity<RequestConfigValidation> requestEntity = new HttpEntity<>(new RequestConfigValidation(configText), new HttpHeaders() {{
+        setBearerAuth(SecurityUtils.getCurrentJwt());
+      }});
+      ResponseEntity<String> responseEntity = restTemplate.postForEntity(wsScrapaperUrl.concat("/check-config"),
+        requestEntity, String.class);
+      if (responseEntity.getStatusCode() == HttpStatus.OK)
+        return;
 
-      String errorMessage = ex.getResponseHeaders() != null ?
-        ex.getResponseHeaders().getFirst("error-message") :
-        "No error message provided...";
-      throw new ScraperRequestFailedException(ex.getStatusCode(), errorMessage);
+      throw new ScraperRequestFailedException(responseEntity.getStatusCode(), responseEntity.getBody());
+    } catch (HttpClientErrorException ex) {
+      throw new ScraperRequestFailedException(ex.getStatusCode(), ex.getResponseBodyAsString());
     }
-  }
-
-  record ResponseConfigValidation(boolean isValid) {
   }
 
   record RequestConfigValidation(String configText) {

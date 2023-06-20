@@ -100,12 +100,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(ScraperRequestFailedException.class)
-  public ResponseEntity<ApiErrorResponse> scraperRequestExceptionException(ScraperRequestFailedException exception) {
-    logger.info("[EXC] ScraperRequestFailedException: {}", exception.getMessage());
+  public ResponseEntity<String> scraperRequestExceptionException(ScraperRequestFailedException exception) {
+    logger.info("[EXC] ScraperRequestFailedException: {}", exception.getScrapaperErrorResult());
     return new ResponseEntity<>(
-      ApiErrorResponse.fromErrors(exception.getErrorStatus(),
-        "scraperError",
-        exception.getErrorMessage()),
+      exception.getScrapaperErrorResult(),
       exception.getErrorStatus()
     );
   }

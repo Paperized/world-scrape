@@ -8,5 +8,5 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class ScraperRequestFailedException extends RuntimeException {
   private final HttpStatus errorStatus;
-  private final String errorMessage;
+  private final String scrapaperErrorResult;
 }

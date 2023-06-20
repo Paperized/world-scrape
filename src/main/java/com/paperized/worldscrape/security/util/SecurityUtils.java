@@ -27,11 +27,11 @@ public class SecurityUtils {
     SecurityContextHolder.getContext().setAuthentication(authToken);
   }
 
-  public static void setCurrentAuthentication(Long id, String email, String[] roles, HttpServletRequest request) {
+  public static void setCurrentAuthentication(Long id, String email, String[] roles, String jwt, HttpServletRequest request) {
     Set<GrantedAuthority> mappedRoles = Arrays.stream(roles)
       .map(SimpleGrantedAuthority::new)
       .collect(Collectors.toSet());
-    AuthenticatedUser authenticatedUser = new AuthenticatedUser(id, email, mappedRoles);
+    AuthenticatedUser authenticatedUser = new AuthenticatedUser(id, email, mappedRoles, jwt);
     SecurityUtils.setCurrentAuthentication(authenticatedUser, request);
   }
 
@@ -49,5 +49,10 @@ public class SecurityUtils {
   public static Set<? extends GrantedAuthority> getCurrentRoles() {
     Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
     return currentAuth.getAuthorities().contains(SIMPLE_ROLE_ANONYMOUS) ? Set.of() : (Set<? extends GrantedAuthority>) ((AuthenticatedUser) currentAuth.getPrincipal()).getAuthorities();
+  }
+
+  public static String getCurrentJwt() {
+    Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+    return currentAuth.getAuthorities().contains(SIMPLE_ROLE_ANONYMOUS) ? null : ((AuthenticatedUser) currentAuth.getPrincipal()).getJwtToken();
   }
 }

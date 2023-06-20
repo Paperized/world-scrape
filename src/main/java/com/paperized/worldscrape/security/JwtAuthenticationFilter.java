@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     if (email != null && idAsString != null) {
       String[] roles = claims.get("roles").toString().split(",");
       Long id = Long.parseLong(idAsString);
-      SecurityUtils.setCurrentAuthentication(id, email, roles, request);
+      SecurityUtils.setCurrentAuthentication(id, email, roles, jwt, request);
     }
 
     filterChain.doFilter(request, response);

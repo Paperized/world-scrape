@@ -1,27 +1,27 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {ScraperConfiguration} from "../models/ScraperConfiguration";
-import {WS_BACKEND_URL} from "../../environments/environment";
+import {WS_BACKEND_URL, WS_SCRAPAPER_URL} from "../../environments/environment";
+import {RunScraperDataReq, RunScraperDataRes} from "../models/RunScraperDataReq";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScraperService {
-  BASE_API = WS_BACKEND_URL + '/scraper';
+  BASE_BE_API = WS_BACKEND_URL + '/scraper';
+  BASE_SP_API = WS_SCRAPAPER_URL;
   constructor(private httpClient: HttpClient) { }
 
-  runScraper(url: string, config_url: string, params: any) {
-    params['url'] = url;
-    params['config_url'] = config_url;
-    return this.httpClient.post<any>(this.BASE_API + '/run', params);
+  runScraper(scraperData: RunScraperDataReq) {
+    return this.httpClient.post<RunScraperDataRes>(this.BASE_SP_API + '/scrape', scraperData);
   }
 
   saveOrUpdateConfiguration(configuration: ScraperConfiguration, configText: string) {
-    return this.httpClient.post<ScraperConfiguration>(this.BASE_API + '/file-configs/create-or-update', {configuration, configText});
+    return this.httpClient.post<ScraperConfiguration>(this.BASE_BE_API + '/file-configs/create-or-update', {configuration, configText});
   }
 
   getAllConfigurations() {
-    return this.httpClient.get<ScraperConfiguration[]>(this.BASE_API + '/file-configs/all');
+    return this.httpClient.get<ScraperConfiguration[]>(this.BASE_BE_API + '/file-configs/all');
   }
 
   getConfigurationText(configuration: ScraperConfiguration) {
@@ -29,6 +29,6 @@ export class ScraperService {
   }
 
   deleteConfiguration(id: number) {
-    return this.httpClient.delete(this.BASE_API + '/file-configs/' + id);
+    return this.httpClient.delete(this.BASE_BE_API + '/file-configs/' + id);
   }
 }

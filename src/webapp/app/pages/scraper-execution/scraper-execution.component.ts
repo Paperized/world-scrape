@@ -7,6 +7,7 @@ import {FormControl} from "@angular/forms";
 import {map, Observable, startWith} from "rxjs";
 import {ScraperConfigParamType, ScraperConfigurationParam} from "../../models/ScraperConfigurationParam";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {RunScraperDataReq, RunScraperDataRes} from "../../models/RunScraperDataReq";
 
 @Component({
   selector: 'app-scraper-execution',
@@ -26,7 +27,7 @@ export class ScraperExecutionComponent implements OnInit, OnDestroy {
 
   isLoading = false;
   errorCodeResult?: string;
-  scrapeResult: any = JSON.parse(jsonMockedResult);
+  scrapeResult: RunScraperDataRes = JSON.parse(jsonMockedResult);
 
   constructor(private scraperService: ScraperService, private pageMode: PageModeService,
               private snackbarService: MatSnackBar) {
@@ -110,7 +111,7 @@ export class ScraperExecutionComponent implements OnInit, OnDestroy {
 
   copyResult() {
     let text = "";
-    navigator.clipboard.writeText(this.scrapeResult)
+    navigator.clipboard.writeText(JSON.stringify(this.scrapeResult))
       .then(() => text = "Result copied to clipboard!")
       .catch(() => text = "Something went wrong!")
       .finally(() => this.snackbarService.open(text, undefined,
@@ -126,7 +127,8 @@ export class ScraperExecutionComponent implements OnInit, OnDestroy {
 
     this.errorCodeResult = undefined;
     this.isLoading = true;
-    this.scraperService.runScraper(this.url, this.selectedConfigUrl, cleanParams).subscribe({
+    const data = new RunScraperDataReq(this.url, this.selectedConfigUrl, false, false, undefined, cleanParams);
+    this.scraperService.runScraper(data).subscribe({
       next: res => {
         this.scrapeResult = res
       },

@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 public interface ScraperService {
-  Map<String, Object> requestScraping(Map<String, Object> scrapeParameters);
   List<ScraperFileConfigDTO> getAllFileConfig(Function<ScraperFileConfiguration, ScraperFileConfigDTO> mapFn);
   ScraperFileConfigDTO createOrUpdateFileConfig(ScraperController.CreateOrUpdateScraperDTO dto, Function<ScraperFileConfiguration, ScraperFileConfigDTO> mapFn);
   void deleteFileConfig(Long id);

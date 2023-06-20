@@ -13,7 +13,7 @@ public class AuthenticatedUser implements UserDetails {
   private Long id;
   private String username;
   private Collection<? extends GrantedAuthority> authorities;
-
+  private String jwtToken;
 
   @Override
   public String getPassword() {

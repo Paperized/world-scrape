@@ -40,7 +40,7 @@ public class SecurityConfig {
     "/swagger-ui/**",
     // other public endpoints of your API may be appended to this array
     // all api by default public, use method security to secure endpoints
-    "/api/**"
+    "/**"
   };
   Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 

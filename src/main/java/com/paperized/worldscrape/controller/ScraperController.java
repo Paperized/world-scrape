@@ -20,12 +20,6 @@ public class ScraperController {
     this.scraperService = scraperService;
   }
 
-  @PostMapping("/run")
-  public Map<String, Object> runScraper(@RequestBody Map<String, Object> scraperParams) {
-    logger.info("[REQ] runScraper: {}", scraperParams);
-    return scraperService.requestScraping(scraperParams);
-  }
-
   @GetMapping("/file-configs/all")
   public List<ScraperFileConfigDTO> getAllFileConfig() {
     logger.info("[REQ] getAllFileConfig");
